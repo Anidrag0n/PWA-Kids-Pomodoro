@@ -2,21 +2,21 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quran Memorization PWA v2</title>
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlF1cmFuIE1lbW9yaXphdGlvbiBUaW1lciIsCiAgInNob3J0X25hbWUiOiAiUXVyYW4gVGltZXIiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2YwZjRmOCIsCiAgInRoZW1lX2NvbG9yIjogIiM0QUYwQTAiCn0=">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
+    <title>Quran & Doa Memorization PWA v3</title>
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlF1cmFuICYgRG9hIE1lbW9yaXphdGlvbiIsCiAgInNob3J0X25hbWUiOiAiUXVyYW4gVGltZXIiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2YxZmFlZSIsCiAgInRoZW1lX2NvbG9yIjogIiM0NTdiOWQiCn0=">
     
     <style>
         :root {
-            --primary-pastel: #A8DADC;
-            --primary-dark: #457B9D;
-            --secondary-pastel: #C1E1C1;
-            --secondary-dark: #2D6A4F;
+            --primary-pastel: #E3F2FD;
+            --primary-dark: #1E88E5;
+            --secondary-pastel: #E8F5E9;
+            --secondary-dark: #43A047;
+            --purple-pastel: #F3E5F5;
+            --purple-dark: #8E24AA;
             --dark: #1D3557;
             --light: #F1FAEE;
             --accent: #E63946;
-            --purple-pastel: #E1BEE7;
-            --purple-dark: #6A1B9A;
         }
 
         body {
@@ -26,25 +26,22 @@
             color: var(--dark);
             display: flex; flex-direction: column;
             min-height: 100vh;
-            user-select: none;
-            -webkit-user-select: none;
+            touch-action: manipulation;
         }
 
         header {
             display: flex; align-items: center;
-            padding: 12px 15px;
-            background: white;
+            padding: 12px 15px; background: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .menu-btn {
-            background: none; border: none;
-            font-size: 24px; cursor: pointer; color: var(--dark);
+            background: none; border: none; font-size: 24px; cursor: pointer; color: var(--dark);
         }
 
         .app-title { margin-left: 15px; font-size: 18px; font-weight: bold; }
 
-        /* Sidebar / Settings */
+        /* Sidebar & Tabs */
         .sidebar {
             position: fixed; top: 0; left: -320px;
             width: 290px; height: 100%;
@@ -59,14 +56,14 @@
             padding: 8px 12px; background: #eee; border: none; 
             border-radius: 5px; cursor: pointer; margin-right: 5px; font-size: 12px;
         }
-        .tab-btn.active { background: var(--primary-dark); color: white; }
+        .tab-btn.active { background: var(--dark); color: white; }
         .tab-content { display: none; margin-top: 15px; }
         .tab-content.active { display: block; }
 
         /* Analog Timer Visual via SVG */
         .timer-container {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            margin: 15px 0; position: relative;
+            margin: 10px 0; position: relative;
         }
         .svg-timer { transform: rotate(-90deg); }
         .progress-bg { fill: none; stroke: #EAEAEA; stroke-width: 8; }
@@ -76,71 +73,62 @@
         }
         .digital-overlay {
             position: absolute; top: 40%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 32px; font-weight: bold; color: var(--dark);
+            transform: translate(-50%, -50%); font-size: 32px; font-weight: bold;
         }
         .timer-status-text {
             position: absolute; top: 62%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; text-transform: uppercase;
         }
 
         /* Scrollable Rows */
-        .scroll-container { padding: 5px 15px; }
-        .section-title { font-size: 14px; margin-bottom: 5px; font-weight: 600; opacity: 0.8; }
+        .scroll-container { padding: 4px 15px; }
+        .section-title { font-size: 13px; margin-bottom: 4px; font-weight: 600; opacity: 0.8; }
         .horizontal-scroll {
-            display: flex; gap: 12px; overflow-x: auto;
-            scroll-snap-type: x mandatory; padding: 5px 2px;
+            display: flex; gap: 10px; overflow-x: auto;
+            scroll-snap-type: x mandatory; padding: 4px 2px;
             scrollbar-width: none;
         }
         .horizontal-scroll::-webkit-scrollbar { display: none; }
 
-        /* Card Styles dengan Warna Pastel Kontras */
-        .timer-card {
-            flex: 0 0 calc(50% - 10px); scroll-snap-align: start;
-            background: var(--primary-pastel); color: var(--dark);
-            border: 2px solid var(--primary-dark); border-radius: 16px;
-            padding: 22px 10px; text-align: center;
-            font-size: 20px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .break-card {
-            flex: 0 0 calc(38% - 10px); scroll-snap-align: start;
-            background: var(--secondary-pastel); color: var(--secondary-dark);
-            border: 2px solid var(--secondary-dark); border-radius: 12px;
-            padding: 12px 10px; text-align: center;
-            font-size: 16px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.05);
+        /* Holdable Cards & Buttons */
+        .holdable {
+            position: relative; overflow: hidden; border-radius: 14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.04); touch-action: none;
+            -webkit-user-select: none; user-select: none;
         }
 
-        /* Randomizer Section (Didekatkan ke menu atas) */
+        .timer-card {
+            flex: 0 0 calc(50% - 8px); scroll-snap-align: start;
+            background: var(--primary-pastel); color: var(--dark);
+            border: 2px solid var(--primary-dark); padding: 20px 10px;
+            text-align: center; font-size: 20px; font-weight: bold;
+        }
+        .break-card {
+            flex: 0 0 calc(38% - 8px); scroll-snap-align: start;
+            background: var(--secondary-pastel); color: var(--secondary-dark);
+            border: 2px solid var(--secondary-dark); padding: 12px 10px;
+            text-align: center; font-size: 16px; font-weight: bold;
+        }
+
+        /* Randomizer Section (Didekatkan ke atas menu istirahat) */
         .random-section {
-            margin: 15px 15px auto 15px;
-            padding: 15px; background: white;
+            margin: 10px 15px auto 15px; padding: 15px; background: white;
             border-radius: 16px; border: 2px solid var(--purple-dark);
-            text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.04);
         }
-        .surah-display { font-size: 22px; font-weight: bold; color: var(--purple-dark); min-height: 30px; }
-        .surah-count-detail { font-size: 11px; color: #7f8c8d; margin-top: 2px; min-height: 15px; }
+        .surah-display { font-size: 20px; font-weight: bold; color: var(--purple-dark); min-height: 28px; }
+        .surah-count-detail { font-size: 11px; color: #7f8c8d; margin-top: 2px; min-height: 14px; }
         
-        /* Hold Button Utility */
-        .btn-wrapper {
-            position: relative; width: 200px; margin: 15px auto 5px auto;
-        }
         .random-btn {
             background: var(--purple-pastel); color: var(--purple-dark);
-            border: 2px solid var(--purple-dark); padding: 12px 0;
-            font-size: 16px; border-radius: 25px; font-weight: bold;
-            cursor: pointer; width: 100%; position: relative; z-index: 2;
-            overflow: hidden; outline: none;
+            border: 2px solid var(--purple-dark); padding: 14px 0;
+            font-size: 15px; font-weight: bold; width: 85%; max-width: 280px; margin-top: 10px;
         }
-        .hold-progress-svg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; pointer-events: none; display: none;
-        }
-        .hold-rect {
-            fill: none; stroke: var(--accent); stroke-width: 6px;
-            stroke-dasharray: 600; stroke-dashoffset: 600;
+
+        /* Visual Hold Progress Bar */
+        .hold-progress-bar {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 6px;
+            background: var(--accent); transform: scaleX(0); transform-origin: left;
         }
 
         .overlay {
@@ -150,60 +138,66 @@
         .overlay.active { display: block; }
 
         .setting-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; align-items: center; }
-        .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
         .report-box { background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
-        .report-box span { display: block; font-size: 18px; font-weight: bold; color: var(--primary-dark); }
-        .report-box label { font-size: 11px; color: #718096; }
+        .report-box span { display: block; font-size: 16px; font-weight: bold; color: var(--dark); }
+        .report-box label { font-size: 10px; color: #718096; }
     </style>
 </head>
 <body>
 
     <header>
-        <button class="menu-btn" onclick="toggleMenu(true)">☰</button>
-        <div class="app-title">Hafalan Quran PWA v2</div>
+        <button class="menu-btn" id="openMenuBtn">☰</button>
+        <div class="app-title">Hafalan Quran & Doa v3</div>
     </header>
 
-    <div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
+    <div class="overlay" id="overlay"></div>
     
     <div class="sidebar" id="sidebar">
-        <button class="close-btn" onclick="toggleMenu(false)">✕</button>
+        <button class="close-btn" id="closeMenuBtn">✕</button>
         <div style="display: flex; margin-bottom: 10px;">
             <button class="tab-btn active" id="tabSet" onclick="switchTab('settings')">⚙️ Pengaturan</button>
-            <button class="tab-btn" id="tabRep" onclick="switchTab('reports')">📊 Statistik Belajar</button>
+            <button class="tab-btn" id="tabRep" onclick="switchTab('reports')">📊 Statistik</button>
         </div>
 
         <div id="contentSettings" class="tab-content active">
-            <h4>Daftar Surat & Log Data</h4>
+            <h4>Daftar Hafalan & Log Data</h4>
             <div style="display:flex; gap:5px;">
-                <input type="text" id="newSurah" placeholder="Nama Surat..." style="flex:1; padding:6px; border:1px solid #ccc; border-radius:4px;">
-                <button onclick="addSurah()" style="background:var(--secondary-dark); color:white; border:none; padding:0 10px; border-radius:4px;">Tambah</button>
+                <input type="text" id="newSurah" placeholder="Nama materi baru..." style="flex:1; padding:6px; border:1px solid #ccc; border-radius:4px;">
+                <button onclick="addSurah()" style="background:var(--purple-dark); color:white; border:none; padding:0 10px; border-radius:4px;">Tambah</button>
             </div>
-            <div id="surahManagerList" style="margin-top:10px; max-height:150px; overflow-y:auto; border:1px solid #eee; padding:5px;"></div>
+            <div id="surahManagerList" style="margin-top:10px; max-height:140px; overflow-y:auto; border:1px solid #eee; padding:5px; font-size:12px;"></div>
             
-            <h4 style="margin-top:15px;">🎵 Nada Alarm</h4>
+            <h4 style="margin-top:15px; margin-bottom: 5px;">🎵 Pilihan Nada Alarm</h4>
             <div style="margin-bottom:8px;">
-                <label style="font-size:12px;">Waktu Menghafal:</label>
-                <select id="studySoundOpt" style="width:100%; padding:4px; margin-top:2px;">
-                    <option value="single">Single Beep</option>
-                    <option value="double">Double Echo Beep</option>
-                    <option value="fast">Fast Warning Alarm</option>
+                <label style="font-size:12px; font-weight:bold;">Waktu Menghafal:</label>
+                <select id="studySoundOpt" style="width:100%; padding:5px; margin-top:2px;">
+                    <option value="short1">Chirp Tinggi (Pendek & Nyaring)</option>
+                    <option value="short2">Beep Ganda Cepat (Pendek & Nyaring)</option>
+                    <option value="short3">Alert Triple Tajam (Pendek & Nyaring)</option>
+                    <option value="long1">Nightingale Arpeggio (Panjang Melodis)</option>
+                    <option value="long2">Pulsating Phone Ring (Panjang Nyaring)</option>
+                    <option value="long3">Siren Eskalasi (Panjang Unik)</option>
                 </select>
-                <button onclick="testAlarm('study')" style="font-size:11px; margin-top:3px; padding:2px 6px;">Test Bunyi</button>
+                <button onclick="testAlarm('study')" style="font-size:11px; margin-top:3px; padding:3px 8px;">🔊 Test Suara</button>
             </div>
             <div>
-                <label style="font-size:12px;">Waktu Istirahat:</label>
-                <select id="breakSoundOpt" style="width:100%; padding:4px; margin-top:2px;">
-                    <option value="single">Single Beep</option>
-                    <option value="double">Double Echo Beep</option>
-                    <option value="fast">Fast Warning Alarm</option>
+                <label style="font-size:12px; font-weight:bold;">Waktu Istirahat:</label>
+                <select id="breakSoundOpt" style="width:100%; padding:5px; margin-top:2px;">
+                    <option value="short1">Chirp Tinggi (Pendek & Nyaring)</option>
+                    <option value="short2">Beep Ganda Cepat (Pendek & Nyaring)</option>
+                    <option value="short3">Alert Triple Tajam (Pendek & Nyaring)</option>
+                    <option value="long1">Nightingale Arpeggio (Panjang Melodis)</option>
+                    <option value="long2">Pulsating Phone Ring (Panjang Nyaring)</option>
+                    <option value="long3">Siren Eskalasi (Panjang Unik)</option>
                 </select>
-                <button onclick="testAlarm('break')" style="font-size:11px; margin-top:3px; padding:2px 6px;">Test Bunyi</button>
+                <button onclick="testAlarm('break')" style="font-size:11px; margin-top:3px; padding:3px 8px;">🔊 Test Suara</button>
             </div>
 
-            <h4 style="margin-top:15px;">Backup & Sinkronisasi</h4>
-            <button onclick="exportSurah()" style="width:100%; padding:6px; margin-bottom:5px; font-size:12px;">Export (.json)</button>
+            <h4 style="margin-top:15px;">Backup Data</h4>
+            <button onclick="exportSurah()" style="width:100%; padding:6px; margin-bottom:5px; font-size:12px;">Export Data (.json)</button>
             <input type="file" id="importFile" onchange="importSurah(event)" style="display:none;">
-            <button onclick="document.getElementById('importFile').click()" style="width:100%; padding:6px; font-size:12px;">Import (.json)</button>
+            <button onclick="document.getElementById('importFile').click()" style="width:100%; padding:6px; font-size:12px;">Import Data (.json)</button>
         </div>
 
         <div id="contentReports" class="tab-content">
@@ -217,90 +211,88 @@
                 <div class="report-box"><span id="repStudyTime">0 mnt</span><label>Durasi Menghafal</label></div>
                 <div class="report-box"><span id="repBreakTime">0 mnt</span><label>Durasi Istirahat</label></div>
                 <div class="report-box"><span id="repSuccessCount">0</span><label>Hafalan Berhasil</label></div>
-                <div class="report-box"><span id="repTopSurah">-</span><label>Surat Paling Sering</label></div>
+                <div class="report-box"><span id="repTopSurah">-</span><label>Paling Sering</label></div>
             </div>
-            <h4 style="margin-top:15px; margin-bottom:5px;">📋 Log Riwayat Hafalan</h4>
-            <div id="historyLogList" style="font-size:12px; max-height:180px; overflow-y:auto; border:1px solid #eee; padding:5px; background:#fafafa;"></div>
+            <h4 style="margin-top:15px; margin-bottom:5px;">📋 Log Riwayat Aktivitas</h4>
+            <div id="historyLogList" style="font-size:11px; max-height:180px; overflow-y:auto; border:1px solid #eee; padding:5px; background:#fafafa;"></div>
         </div>
     </div>
 
     <div class="timer-container">
-        <svg class="svg-timer" width="180" height="180">
-            <circle class="progress-bg" cx="90" cy="90" r="75"></circle>
-            <circle class="progress-bar" id="progressBar" cx="90" cy="90" r="75" stroke-dasharray="471" stroke-dashoffset="0"></circle>
+        <svg class="svg-timer" width="160" height="160">
+            <circle class="progress-bg" cx="80" cy="80" r="68"></circle>
+            <circle class="progress-bar" id="progressBar" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="0"></circle>
         </svg>
         <div class="digital-overlay" id="countdown">00:00</div>
         <div class="timer-status-text" id="timerStatus">Siap Belajar</div>
     </div>
 
     <div class="scroll-container">
-        <div class="section-title">⏱️ Waktu Menghafal</div>
+        <div class="section-title">⏱️ Waktu Menghafal (Tahan 1 Detik)</div>
         <div class="horizontal-scroll">
-            <div class="timer-card" onclick="startTimer(40, 'study')">40 Mnt</div>
-            <div class="timer-card" onclick="startTimer(30, 'study')">30 Mnt</div>
-            <div class="timer-card" onclick="startTimer(20, 'study')">20 Mnt</div>
-            <div class="timer-card" onclick="startTimer(15, 'study')">15 Mnt</div>
-            <div class="timer-card" onclick="startTimer(10, 'study')">10 Mnt</div>
+            <div class="holdable timer-card" data-duration="40" data-type="study">40 Mnt<div class="hold-progress-bar"></div></div>
+            <div class="holdable timer-card" data-duration="30" data-type="study">30 Mnt<div class="hold-progress-bar"></div></div>
+            <div class="holdable timer-card" data-duration="20" data-type="study">20 Mnt<div class="hold-progress-bar"></div></div>
+            <div class="holdable timer-card" data-duration="15" data-type="study">15 Mnt<div class="hold-progress-bar"></div></div>
+            <div class="holdable timer-card" data-duration="10" data-type="study">10 Mnt<div class="hold-progress-bar"></div></div>
         </div>
     </div>
 
-    <div class="scroll-container" style="margin-bottom: 5px;">
-        <div class="section-title">☕ Waktu Istirahat</div>
+    <div class="scroll-container">
+        <div class="section-title">☕ Waktu Istirahat (Tahan 1 Detik)</div>
         <div class="horizontal-scroll">
-            <div class="break-card" onclick="startTimer(15, 'break')">15 Mnt</div>
-            <div class="break-card" onclick="startTimer(10, 'break')">10 Mnt</div>
-            <div class="break-card" onclick="startTimer(5, 'break')">5 Mnt</div>
+            <div class="holdable break-card" data-duration="15" data-type="break">15 Mnt<div class="hold-progress-bar"></div></div>
+            <div class="holdable break-card" data-duration="10" data-type="break">10 Mnt<div class="hold-progress-bar"></div></div>
+            <div class="holdable break-card" data-duration="5" data-type="break">5 Mnt<div class="hold-progress-bar"></div></div>
         </div>
     </div>
 
     <div class="random-section">
-        <div class="surah-display" id="surahResult">Klik Acak Surat!</div>
+        <div class="surah-display" id="surahResult">Materi Belum Diacak</div>
         <div class="surah-count-detail" id="surahCountDetail"></div>
-        <div class="btn-wrapper">
-            <button class="random-btn" id="randomBtn" onclick="handleRandomClick()">Acak Surat 🎲</button>
-            <svg class="hold-progress-svg" id="holdSvg" viewBox="0 0 200 50" preserveAspectRatio="none">
-                <rect class="hold-rect" id="holdRect" width="200" height="50" rx="25"></rect>
-            </svg>
-        </div>
-        <div style="font-size:10px; color:#95a5a6; margin-top:5px;">*Tahan tombol setelah diacak untuk mencatat sudah hafal</div>
+        <button class="holdable random-btn" id="randomBtn">
+            TAHAN 2 DETIK UNTUK ACAK 🎲
+            <div class="hold-progress-bar"></div>
+        </button>
     </div>
 
     <script>
-        // Struktur data terintegrasi
-        let defaultSurahs = ["An-Nas", "Al-Falaq", "Al-Ikhlas", "Al-Lahab", "An-Nasr", "Al-Kafirun", "Al-Kautsar", "Al-Ma'un", "Quraisy"];
+        // Data Default Sesuai Request (Typo & Kapitalisasi diperbaiki otomatis)
+        const defaultSurahs = [
+            "Dua Kalimat Syahadat", "Sholawat Nabi", "Istighfar Panjang", "Kalimat Thayyibah (Tasbih, Tahmid, Tahlil)",
+            "Doa Orang Tua", "Doa Bangun Tidur", "Doa Mau Tidur", "Doa Makan", "Doa Masuk Kamar Mandi", 
+            "Doa Keluar Kamar Mandi", "Doa Keluar Rumah", "Doa Masuk Rumah", "Doa Selamat", "Doa Belajar", "Ayat Kursi",
+            "Doa Wudhu", "Doa Selesai Wudhu", "Niat Sholat 4 Rakaat", "Niat Sholat 3 Rakaat", "Niat Sholat 2 Rakaat", 
+            "Niat Puasa Ramadhan", "Niat Berbuka Puasa",
+            "Surat Al-Fatihah", "Surat Al-Ikhlas", "Surat An-Nas", "Surat Al-Falaq", "Surat Al-Kafirun", "Surat Al-Insyirah", "Surat Quraisy"
+        ];
         
-        // Load atau inisialisasi data tersemat di LocalStorage
-        let surahData = JSON.parse(localStorage.getItem('surahDataV2')) || defaultSurahs.map(name => ({ name: name, count: 0, lastSucceed: 0 }));
-        let sessionLogs = JSON.parse(localStorage.getItem('sessionLogsV2')) || [];
+        let surahData = JSON.parse(localStorage.getItem('surahDataV3')) || defaultSurahs.map(name => ({ name: name, count: 0, lastSucceed: 0 }));
+        let sessionLogs = JSON.parse(localStorage.getItem('sessionLogsV3')) || [];
 
         let countdownInterval;
-        let activeTimerMode = 'study'; // study atau break
         let totalDurationAllocated = 0;
-        let currentSelectedSurahIndex = -1;
-        
-        // Hold Button Logic Variables
-        let holdTimeout;
-        let holdInterval;
-        let holdDuration = 0;
-        const holdThreshold = 2000; // 2 Detik Tahan
-        let isHolding = false;
+        let currentSelectedSurahIndex = -1; // -1 berarti mode acak siap dijalankan
 
-        const circleRadius = 75;
+        const circleRadius = 68;
         const circumference = 2 * Math.PI * circleRadius;
 
         window.onload = function() {
             document.getElementById('progressBar').style.strokeDasharray = circumference;
             document.getElementById('progressBar').style.strokeDashoffset = 0;
-            initHoldFeatures();
+            
+            // Inisialisasi event pointer terpadu untuk sidebar
+            document.getElementById('openMenuBtn').addEventListener('pointerdown', () => toggleMenu(true));
+            document.getElementById('closeMenuBtn').addEventListener('pointerdown', () => toggleMenu(false));
+            document.getElementById('overlay').addEventListener('pointerdown', () => toggleMenu(false));
+            
+            setupAllHoldButtons();
         };
 
         function toggleMenu(open) {
             document.getElementById('sidebar').classList.toggle('active', open);
             document.getElementById('overlay').classList.toggle('active', open);
-            if(open) {
-                renderSurahSettings();
-                renderReports();
-            }
+            if(open) { renderSurahSettings(); renderReports(); }
         }
 
         function switchTab(tab) {
@@ -310,45 +302,66 @@
             document.getElementById('contentReports').classList.toggle('active', tab === 'reports');
         }
 
-        // --- WEB AUDIO API (Sintetis Tanpa File Eksternal) ---
-        function playBeep(type) {
+        // --- WEB AUDIO API ENGINE (6 VARIASI NADA NYARING) ---
+        function playAudioTone(soundType) {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
-            function beep(frequency, duration, startTime) {
+            const now = audioCtx.currentTime;
+
+            function osc(freq, type, duration, startTime, startGain=0.3) {
                 const oscillator = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
-                oscillator.frequency.value = frequency;
-                oscillator.type = 'sine';
-                gainNode.gain.setValueAtTime(0.5, startTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                oscillator.frequency.setValueAtTime(freq, startTime);
+                oscillator.type = type;
+                gainNode.gain.setValueAtTime(startGain, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
                 oscillator.start(startTime);
                 oscillator.stop(startTime + duration);
             }
 
-            const now = audioCtx.currentTime;
-            if (type === 'single') {
-                beep(880, 0.5, now);
-            } else if (type === 'double') {
-                beep(660, 0.2, now);
-                beep(660, 0.2, now + 0.3);
-            } else if (type === 'fast') {
-                for(let i=0; i<5; i++) {
-                    beep(1000, 0.1, now + (i * 0.2));
-                }
+            switch(soundType) {
+                case 'short1': // Chirp Tinggi Nyaring
+                    osc(2600, 'sine', 0.12, now, 0.4);
+                    break;
+                case 'short2': // Beep Ganda Cepat Nyelekit
+                    osc(1900, 'square', 0.06, now, 0.2);
+                    osc(1900, 'square', 0.06, now + 0.1, 0.2);
+                    break;
+                case 'short3': // Alert Triple Tajam
+                    osc(2200, 'triangle', 0.05, now, 0.4);
+                    osc(2200, 'triangle', 0.05, now + 0.08, 0.4);
+                    osc(2200, 'triangle', 0.05, now + 0.16, 0.4);
+                    break;
+                case 'long1': // Nightingale Arpeggio Melodis (Terinspirasi Samsung)
+                    let notes = [523.25, 659.25, 783.99, 987.77]; 
+                    for(let loop=0; loop<3; loop++) {
+                        notes.forEach((note, index) => {
+                            osc(note, 'sine', 0.2, now + (loop * 0.8) + (index * 0.15), 0.3);
+                        });
+                    }
+                    break;
+                case 'long2': // Pulsating Traditional Phone Ring (Nyereped)
+                    for(let i=0; i<12; i++) {
+                        osc(i % 2 === 0 ? 480 : 420, 'square', 0.08, now + (i * 0.12), 0.15);
+                    }
+                    break;
+                case 'long3': // Siren Eskalasi Unik
+                    for(let i=0; i<25; i++) {
+                        osc(500 + (i * 35), 'sawtooth', 0.07, now + (i * 0.08), 0.04);
+                    }
+                    break;
             }
         }
 
         function testAlarm(mode) {
             const opt = mode === 'study' ? document.getElementById('studySoundOpt').value : document.getElementById('breakSoundOpt').value;
-            playBeep(opt);
+            playAudioTone(opt);
         }
 
         // --- TIMER ENGINE ---
         function startTimer(minutes, mode) {
             clearInterval(countdownInterval);
-            activeTimerMode = mode;
             totalDurationAllocated = minutes * 60;
             
             const display = document.getElementById('countdown');
@@ -365,13 +378,8 @@
 
             let timeRemaining = totalDurationAllocated;
 
-            // Catat log alokasi waktu awal ke analitik
-            sessionLogs.push({
-                type: mode,
-                duration: minutes,
-                timestamp: Date.now()
-            });
-            localStorage.setItem('sessionLogsV2', JSON.stringify(sessionLogs));
+            sessionLogs.push({ type: mode, duration: minutes, timestamp: Date.now() });
+            localStorage.setItem('sessionLogsV3', JSON.stringify(sessionLogs));
 
             countdownInterval = setInterval(() => {
                 let mins = Math.floor(timeRemaining / 60);
@@ -379,7 +387,6 @@
 
                 display.textContent = `${mins < 10 ? '0'+mins : mins}:${secs < 10 ? '0'+secs : secs}`;
                 
-                // Menghitung Depleted Line jam analog
                 let offset = circumference - (timeRemaining / totalDurationAllocated) * circumference;
                 progressBar.style.strokeDashoffset = offset;
 
@@ -387,33 +394,79 @@
                     clearInterval(countdownInterval);
                     progressBar.style.strokeDashoffset = circumference;
                     const selectedSound = mode === 'study' ? document.getElementById('studySoundOpt').value : document.getElementById('breakSoundOpt').value;
-                    playBeep(selectedSound);
+                    playAudioTone(selectedSound);
                     statusText.textContent = "Selesai 🎉";
                 }
                 timeRemaining--;
             }, 1000);
         }
 
-        // --- RANDOMIZER ALGORITHMS (Weighted + Cooldown) ---
-        function handleRandomClick() {
-            if(isHolding) return; 
-            
+        // --- UNIFIED POINTER HOLD MECHANISM (SOLUSI DRAG & TOUCH BUG) ---
+        function setupAllHoldButtons() {
+            // Setup Kartu Menghafal & Istirahat (1 Detik / 1000ms)
+            document.querySelectorAll('.timer-card, .break-card').forEach(card => {
+                bindHoldEvent(card, 1000, () => {
+                    let mins = parseInt(card.getAttribute('data-duration'));
+                    let type = card.getAttribute('data-type');
+                    startTimer(mins, type);
+                });
+            });
+
+            // Setup Tombol Acak / Berhasil (2 Detik / 2000ms)
+            const randomBtn = document.getElementById('randomBtn');
+            bindHoldEvent(randomBtn, 2000, () => {
+                if(currentSelectedSurahIndex === -1) {
+                    executeWeightedRandom();
+                } else {
+                    executeSuccessRegistration();
+                }
+            });
+        }
+
+        function bindHoldEvent(element, duration, callback) {
+            let holdTimer;
+            const bar = element.querySelector('.hold-progress-bar');
+
+            element.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                
+                if (bar) {
+                    bar.style.transition = `transform ${duration}ms linear`;
+                    bar.style.transform = 'scaleX(1)';
+                }
+
+                holdTimer = setTimeout(() => {
+                    callback();
+                    clearHold();
+                }, duration);
+            });
+
+            function clearHold() {
+                clearTimeout(holdTimer);
+                if (bar) {
+                    bar.style.transition = 'none';
+                    bar.style.transform = 'scaleX(0)';
+                }
+            }
+
+            element.addEventListener('pointerup', clearHold);
+            element.addEventListener('pointerleave', clearHold);
+            element.addEventListener('pointercancel', clearHold);
+        }
+
+        // --- RANDOMIZER ALGORITHMS (WEIGHTED + COOLDOWN) ---
+        function executeWeightedRandom() {
             const now = Date.now();
             const threeHoursInMs = 3 * 60 * 60 * 1000;
 
-            // Filter out yang masuk masa cool down 3 jam
-            let availableSurahs = surahData.map((s, idx) => ({...s, originalIdx: idx}))
-                                            .filter(s => (now - s.lastSucceed) > threeHoursInMs);
+            let available = surahData.map((s, idx) => ({...s, originalIdx: idx}))
+                                     .filter(s => (now - s.lastSucceed) > threeHoursInMs);
 
-            if(availableSurahs.length === 0) {
-                // Kebijakan fallback jika semua surat terkena cooldown
-                availableSurahs = surahData.map((s, idx) => ({...s, originalIdx: idx}));
-            }
+            if(available.length === 0) available = surahData.map((s, idx) => ({...s, originalIdx: idx}));
 
-            // Hitung kalkulasi bobot terbalik (semakin sering dihafal, bobot nilai semakin rendah)
             let totalWeight = 0;
-            let pool = availableSurahs.map(s => {
-                let weight = Math.max(1, 100 - (s.count * 15)); // Skala penurunan peluang berbobot
+            let pool = available.map(s => {
+                let weight = Math.max(1, 100 - (s.count * 12)); 
                 totalWeight += weight;
                 return { ...s, weightLimit: totalWeight };
             });
@@ -424,84 +477,45 @@
             if(selected) {
                 currentSelectedSurahIndex = selected.originalIdx;
                 document.getElementById('surahResult').textContent = selected.name;
-                document.getElementById('surahCountDetail').textContent = `Berhasil dihafal: ${selected.count} kali`;
+                document.getElementById('surahCountDetail').textContent = `Sudah dihafalkan: ${selected.count} kali`;
                 
-                // Ganti UI ke mode Hold Hint
                 const btn = document.getElementById('randomBtn');
-                btn.textContent = "TEKAN & TAHAN JIKA HAFAL";
-                btn.style.background = "var(--accent)";
-                btn.style.color = "white";
+                btn.innerHTML = 'TAHAN 2 DETIK JIKA HAFAL 🎉<div class="hold-progress-bar"></div>';
+                btn.style.background = 'var(--accent)';
+                btn.style.color = 'white';
+                playAudioTone('short1');
             }
         }
 
-        // --- HOLD BUTTON HANDLERS ---
-        function initHoldFeatures() {
-            const btn = document.getElementById('randomBtn');
-            const holdSvg = document.getElementById('holdSvg');
-            const holdRect = document.getElementById('holdRect');
-
-            function startHold(e) {
-                if(currentSelectedSurahIndex === -1) return;
-                isHolding = true;
-                holdDuration = 0;
-                holdSvg.style.display = "block";
-                
-                holdInterval = setInterval(() => {
-                    holdDuration += 50;
-                    let ratio = Math.min(1, holdDuration / holdThreshold);
-                    // Update stroke border pengisian animatif
-                    holdRect.style.strokeDashoffset = 600 - (ratio * 600);
-
-                    if(holdDuration >= holdThreshold) {
-                        triggerSurahSuccess();
-                        endHold();
-                    }
-                }, 50);
-            }
-
-            function endHold() {
-                clearInterval(holdInterval);
-                isHolding = false;
-                holdSvg.style.display = "none";
-                holdRect.style.strokeDashoffset = 600;
-                
-                const btn = document.getElementById('randomBtn');
-                btn.textContent = "Acak Surat 🎲";
-                btn.style.background = "var(--purple-pastel)";
-                btn.style.color = "var(--purple-dark)";
-            }
-
-            btn.addEventListener('mousedown', startHold);
-            btn.addEventListener('mouseup', endHold);
-            btn.addEventListener('mouseleave', endHold);
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); startHold(e); });
-            btn.addEventListener('touchend', endHold);
-        }
-
-        function triggerSurahSuccess() {
+        function executeSuccessRegistration() {
             if(currentSelectedSurahIndex !== -1) {
                 surahData[currentSelectedSurahIndex].count += 1;
                 surahData[currentSelectedSurahIndex].lastSucceed = Date.now();
                 
-                // Tambahkan catatan riwayat berbobot ke log analitik
                 sessionLogs.push({
                     type: 'success_memorize',
                     surahName: surahData[currentSelectedSurahIndex].name,
                     timestamp: Date.now()
                 });
 
-                localStorage.setItem('surahDataV2', JSON.stringify(surahData));
-                localStorage.setItem('sessionLogsV2', JSON.stringify(sessionLogs));
+                localStorage.setItem('surahDataV3', JSON.stringify(surahData));
+                localStorage.setItem('sessionLogsV3', JSON.stringify(sessionLogs));
                 
                 document.getElementById('surahResult').textContent = "🎉 Berhasil Dicatat! 🎉";
-                document.getElementById('surahCountDetail').textContent = `${surahData[currentSelectedSurahIndex].name} bertambah skor hafalannya.`;
-                currentSelectedSurahIndex = -1;
+                document.getElementById('surahCountDetail').textContent = `Skor hafalan untuk ${surahData[currentSelectedSurahIndex].name} berhasil ditambahkan.`;
                 
-                playBeep('single');
+                // Kembalikan ke State Awal
+                currentSelectedSurahIndex = -1;
+                const btn = document.getElementById('randomBtn');
+                btn.innerHTML = 'TAHAN 2 DETIK UNTUK ACAK 🎲<div class="hold-progress-bar"></div>';
+                btn.style.background = 'var(--purple-pastel)';
+                btn.style.color = 'var(--purple-dark)';
+                
+                playAudioTone('short2');
             }
         }
 
-        // --- DASHBOARD REPORT DATA ENGINE ---
+        // --- DASHBOARD DATA REPORT LOGIC ---
         function renderReports() {
             const period = document.getElementById('reportPeriod').value;
             const now = new Date();
@@ -514,9 +528,7 @@
 
             let filteredLogs = sessionLogs.filter(log => log.timestamp >= startTimeLimit);
 
-            let studyMinutes = 0;
-            let breakMinutes = 0;
-            let successCount = 0;
+            let studyMinutes = 0, breakMinutes = 0, successCount = 0;
             let surahFreq = {};
 
             filteredLogs.forEach(log => {
@@ -531,10 +543,7 @@
             let topSurah = "-";
             let maxFreq = 0;
             for(let key in surahFreq) {
-                if(surahFreq[key] > maxFreq) {
-                    maxFreq = surahFreq[key];
-                    topSurah = key;
-                }
+                if(surahFreq[key] > maxFreq) { maxFreq = surahFreq[key]; topSurah = key; }
             }
 
             document.getElementById('repStudyTime').textContent = studyMinutes + " mnt";
@@ -542,18 +551,17 @@
             document.getElementById('repSuccessCount').textContent = successCount;
             document.getElementById('repTopSurah').textContent = topSurah !== "-" ? `${topSurah} (${maxFreq}x)` : "-";
 
-            // Render Detail List Riwayat Textual
             const logContainer = document.getElementById('historyLogList');
             logContainer.innerHTML = '';
             filteredLogs.slice().reverse().forEach(log => {
                 let dateStr = new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                if(log.type === 'study') logContainer.innerHTML += `<div>[${dateStr}] 📖 Menghafal selama <b>${log.duration} mnt</b></div>`;
-                if(log.type === 'break') logContainer.innerHTML += `<div>[${dateStr}] ☕ Istirahat selama <b>${log.duration} mnt</b></div>`;
-                if(log.type === 'success_memorize') logContainer.innerHTML += `<div style="color:green;">[${dateStr}] ✅ Berhasil hafal <b>Surat ${log.surahName}</b></div>`;
+                if(log.type === 'study') logContainer.innerHTML += `<div>[${dateStr}] 📖 Menghafal <b>${log.duration} mnt</b></div>`;
+                if(log.type === 'break') logContainer.innerHTML += `<div>[${dateStr}] ☕ Istirahat <b>${log.duration} mnt</b></div>`;
+                if(log.type === 'success_memorize') logContainer.innerHTML += `<div style="color:green;">[${dateStr}] ✅ Hafal <b>${log.surahName}</b></div>`;
             });
         }
 
-        // --- SETTINGS MANAGEMENT UTILITIES ---
+        // --- SETTINGS UTILITIES ---
         function renderSurahSettings() {
             const container = document.getElementById('surahManagerList');
             container.innerHTML = '';
@@ -572,7 +580,7 @@
             const name = input.value.trim();
             if(name) {
                 surahData.push({ name: name, count: 0, lastSucceed: 0 });
-                localStorage.setItem('surahDataV2', JSON.stringify(surahData));
+                localStorage.setItem('surahDataV3', JSON.stringify(surahData));
                 input.value = '';
                 renderSurahSettings();
             }
@@ -580,7 +588,7 @@
 
         function deleteSurah(index) {
             surahData.splice(index, 1);
-            localStorage.setItem('surahDataV2', JSON.stringify(surahData));
+            localStorage.setItem('surahDataV3', JSON.stringify(surahData));
             renderSurahSettings();
         }
 
@@ -589,12 +597,13 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataPackage));
             const dlAnchor = document.createElement('a');
             dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", "data_hafalan_quran_pwa.json");
+            dlAnchor.setAttribute("download", "data_pwa_v3.json");
             document.body.appendChild(dlAnchor);
             dlAnchor.click();
             dlAnchor.remove();
         }
 
+        // Fungsi import data eksternal
         function importSurah(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -605,14 +614,12 @@
                     if(parsed.surahData && parsed.sessionLogs) {
                         surahData = parsed.surahData;
                         sessionLogs = parsed.sessionLogs;
-                        localStorage.setItem('surahDataV2', JSON.stringify(surahData));
-                        localStorage.setItem('sessionLogsV2', JSON.stringify(sessionLogs));
+                        localStorage.setItem('surahDataV3', JSON.stringify(surahData));
+                        localStorage.setItem('sessionLogsV3', JSON.stringify(sessionLogs));
                         renderSurahSettings();
-                        alert("Seluruh data hafalan dan log statistik sukses di-import!");
-                    } else {
-                        alert("Format file v2 tidak cocok.");
-                    }
-                } catch (err) { alert("Gagal membaca file json."); }
+                        alert("Data hafalan dan statistik sukses di-import!");
+                    } else { alert("Format data v3 tidak cocok."); }
+                } catch (err) { alert("Gagal membaca file JSON."); }
             };
             reader.readAsText(file);
         }
