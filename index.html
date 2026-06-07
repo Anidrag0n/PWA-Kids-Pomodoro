@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
-    <title>Quran & Doa Memorization PWA v5</title>
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlF1cmFuIE1lbW9yaXphdGlvbiIsCiAgInNob3J0X25hbWUiOiAiUXVyYW4gVGltZXIiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2YxZmFlZSIsCiAgInRoZW1lX2NvbG9yIjogIiM0NTdiOWQiCn0=">
+    <title>Timer Hafalan Anak - Adrian Pradipta</title>
+    
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1lZGlhIEhhZmFsYW4gQW5hayIsCiAgInNob3J0X25hbWUiOiAiSGFmYWxhbiBBbmFrIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmMWZhZWUiLAogICJ0aGVtZV9jb2xvciI6IiM0NTdiOWQiCn0=">
     
     <style>
         :root {
@@ -35,7 +36,9 @@
         }
 
         .menu-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--dark); }
-        .app-title { margin-left: 15px; font-size: 18px; font-weight: bold; }
+        
+        /* Modifikasi Tulisan Bagian Paling Atas UI Aplikasi */
+        .app-title { margin-left: 15px; font-size: 18px; font-weight: bold; color: var(--dark); }
 
         /* Sidebar & Tabs */
         .sidebar {
@@ -108,7 +111,7 @@
 
         /* Randomizer Section */
         .random-section {
-            margin: 10px 15px auto 15px; padding: 15px; background: white;
+            margin: 10px 15px 15px 15px; padding: 15px; background: white;
             border-radius: 16px; border: 2px solid var(--purple-dark);
             text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.04);
         }
@@ -138,13 +141,22 @@
         }
         .backup-title { font-size: 12px; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; color: var(--dark); opacity: 0.8; }
         .backup-btn { width: 100%; padding: 7px; margin-bottom: 5px; font-size: 11px; font-weight: bold; cursor: pointer; }
+
+        /* Modifikasi Elemen Credit Name di Bagian Paling Bawah UI Aplikasi */
+        footer {
+            margin-top: auto; padding: 12px; background: white;
+            text-align: center; font-size: 11px; font-weight: 600;
+            color: #7f8c8d; border-top: 1px solid #f1f1f1;
+            letter-spacing: 0.5px;
+        }
+        footer b { color: var(--dark); }
     </style>
 </head>
 <body>
 
     <header>
         <button class="menu-btn" id="openMenuBtn">☰</button>
-        <div class="app-title">Hafalan Quran & Doa v5</div>
+        <div class="app-title">Timer Hafalan Anak</div>
     </header>
 
     <div class="overlay" id="overlay"></div>
@@ -266,6 +278,14 @@
         </div>
     </div>
 
+    <footer style="margin-top: auto; padding: 15px; background: white; text-align: center; font-size: 11px; color: #7f8c8d; border-top: 1px solid #f1f1f1;">
+        Dibuat dengan ❤️ oleh <b>Adrian Pradipta</b><br>
+        Jakarta @2026<br>
+        <a href="https://www.instagram.com/adriannpradipta" style="color: var(--purple-dark); text-decoration: none; font-weight: bold;">
+            @adriannpradipta
+        </a>
+    </footer>
+
     <script>
         const defaultSurahs = [
             "Dua Kalimat Syahadat", "Sholawat Nabi", "Istighfar Panjang", "Kalimat Thayyibah (Tasbih, Tahmid, Tahlil)",
@@ -310,7 +330,7 @@
             document.getElementById('contentReports').classList.toggle('active', tab === 'reports');
         }
 
-        // --- POLYPHONIC AUDIO SYNTHESIZER (UPGRADE NADA CERIA & NYARING) ---
+        // --- POLYPHONIC AUDIO SYNTHESIZER ---
         function playAudioTone(soundType) {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const now = audioCtx.currentTime;
@@ -326,32 +346,16 @@
             }
 
             switch(soundType) {
-                case 'short1': // Happy Bell Ring
-                    playNote(1567.98, 'sine', now, 0.15, 0.4); playNote(1975.53, 'sine', now + 0.08, 0.2, 0.4);
-                    break;
-                case 'short2': // Sweet Marimba Pop
-                    playNote(1046.50, 'triangle', now, 0.08, 0.3); playNote(1318.51, 'triangle', now + 0.06, 0.08, 0.3); playNote(1567.98, 'triangle', now + 0.12, 0.15, 0.3);
-                    break;
-                case 'short3': // Twin Crystal Chime
-                    playNote(2093.00, 'sine', now, 0.1, 0.3); playNote(2093.00, 'sine', now + 0.15, 0.2, 0.2);
-                    break;
-                case 'long1': // Classic Clock Melody (Catchy Arpeggio)
+                case 'short1': playNote(1567.98, 'sine', now, 0.15, 0.4); playNote(1975.53, 'sine', now + 0.08, 0.2, 0.4); break;
+                case 'short2': playNote(1046.50, 'triangle', now, 0.08, 0.3); playNote(1318.51, 'triangle', now + 0.06, 0.08, 0.3); playNote(1567.98, 'triangle', now + 0.12, 0.15, 0.3); break;
+                case 'short3': playNote(2093.00, 'sine', now, 0.1, 0.3); playNote(2093.00, 'sine', now + 0.15, 0.2, 0.2); break;
+                case 'long1': 
                     let m1 = [523.25, 659.25, 587.33, 392.00];
                     m1.forEach((f, i) => { playNote(f, 'sine', now + (i * 0.25), 0.3, 0.4); });
                     m1.forEach((f, i) => { playNote(f * 2, 'sine', now + 1.0 + (i * 0.25), 0.3, 0.3); });
                     break;
-                case 'long2': // Playful Playground Bells
-                    for(let loop=0; loop<4; loop++) {
-                        let t = now + (loop * 0.5);
-                        playNote(1318.51, 'sine', t, 0.12, 0.3); playNote(1567.98, 'sine', t + 0.15, 0.12, 0.3);
-                    }
-                    break;
-                case 'long3': // Energetic Uplift Ring
-                    for(let i=0; i<8; i++) {
-                        playNote(880 + (i * 100), 'triangle', now + (i * 0.15), 0.2, 0.3);
-                        playNote(1760, 'sine', now + 1.2 + (i * 0.08), 0.1, 0.3);
-                    }
-                    break;
+                case 'long2': for(let loop=0; loop<4; loop++) { let t = now + (loop * 0.5); playNote(1318.51, 'sine', t, 0.12, 0.3); playNote(1567.98, 'sine', t + 0.15, 0.12, 0.3); } break;
+                case 'long3': for(let i=0; i<8; i++) { playNote(880 + (i * 100), 'triangle', now + (i * 0.15), 0.2, 0.3); playNote(1760, 'sine', now + 1.2 + (i * 0.08), 0.1, 0.3); } break;
             }
         }
 
@@ -440,7 +444,7 @@
             element.addEventListener('pointercancel', clearHold);
         }
 
-        // --- RANDOMIZER ALGORITHMS (INSTAN KLIK) ---
+        // --- RANDOMIZER ALGORITHMS ---
         function executeWeightedRandom() {
             const now = Date.now();
             const threeHoursInMs = 3 * 60 * 60 * 1000;
@@ -532,9 +536,8 @@
             });
         }
 
-        // --- TAB PENGATURAN: EXPORT/IMPORT DAFTAR MATERI SAJA (FOR PUBLIC) ---
+        // --- TAB PENGATURAN: EXPORT/IMPORT DAFTAR MATERI SAJA ---
         function exportMateriOnly() {
-            // Hanya mengekstrak nama-nama materi, mereset semua count dan timestamp ke 0 demi privasi
             let cleanMateri = surahData.map(s => ({ name: s.name, count: 0, lastSucceed: 0 }));
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cleanMateri));
             const dlAnchor = document.createElement('a');
@@ -552,14 +555,14 @@
                         surahData = parsed.map(s => ({ name: s.name, count: 0, lastSucceed: 0 }));
                         localStorage.setItem('surahDataV5', JSON.stringify(surahData));
                         renderSurahSettings();
-                        alert("Sukses! Daftar materi baru berhasil dimuat (Statistik lama anak Anda tetap aman).");
+                        alert("Sukses! Daftar materi baru berhasil dimuat.");
                     } else { alert("Struktur file sharing materi tidak valid."); }
                 } catch (err) { alert("Gagal membaca berkas JSON."); }
             };
             reader.readAsText(file);
         }
 
-        // --- TAB STATISTIK: BACKUP/RESTORE DATA STATISTIK PERSONAL (FOR PRIVATE USE) ---
+        // --- TAB STATISTIK: BACKUP/RESTORE DATA STATISTIK PERSONAL ---
         function exportStatistikOnly() {
             let dataPackage = { surahData: surahData, sessionLogs: sessionLogs };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataPackage));
@@ -579,7 +582,7 @@
                         localStorage.setItem('surahDataV5', JSON.stringify(surahData));
                         localStorage.setItem('sessionLogsV5', JSON.stringify(sessionLogs));
                         renderReports();
-                        alert("Restorasi Berhasil! Seluruh histori pencapaian personal anak Anda telah pulih sempurna.");
+                        alert("Restorasi Berhasil! Seluruh histori pencapaian personal anak Anda telah pulih.");
                     } else { alert("Berkas ini bukan arsip statistik personal yang valid."); }
                 } catch (err) { alert("Gagal memproses data pemulihan."); }
             };
