@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
-    <title>Timer Hafalan Anak - Adrian Pradipta</title>
+    <title>Media Hafalan Anak - Adrian Pradipta</title>
     
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1lZGlhIEhhZmFsYW4gQW5hayIsCiAgInNob3J0X25hbWUiOiAiSGFmYWxhbiBBbmFrIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmMWZhZWUiLAogICJ0aGVtZV9jb2xvciI6IiM0NTdiOWQiCn0=">
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIk1lZGlhIEhhZmFsYW4gQW5hayIsICJzaG9ydF9uYW1lIjogIkhhZmFsYW4gQW5hayIsICJzdGFydF91cmwiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAiaWNvbnMiOiBbeyJzcmMiOiAiLi9HZW1pbmlfR2VuZXJhdGVkX0ltYWdlXzFyNDZwMDFyNDZwMDFyNDYucG5nIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInNpemVzIjogIjUxMng1MTIifV0sICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmMWZhZWUiLCAidGhlbWVfY29sb3IiOiAiIzQ1N2I5ZCJ9">
     
     <style>
         :root {
@@ -36,8 +36,6 @@
         }
 
         .menu-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--dark); }
-        
-        /* Modifikasi Tulisan Bagian Paling Atas UI Aplikasi */
         .app-title { margin-left: 15px; font-size: 18px; font-weight: bold; color: var(--dark); }
 
         /* Sidebar & Tabs */
@@ -142,21 +140,21 @@
         .backup-title { font-size: 12px; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; color: var(--dark); opacity: 0.8; }
         .backup-btn { width: 100%; padding: 7px; margin-bottom: 5px; font-size: 11px; font-weight: bold; cursor: pointer; }
 
-        /* Modifikasi Elemen Credit Name di Bagian Paling Bawah UI Aplikasi */
+        /* Footer dengan Kontak Sosial Media Aman */
         footer {
-            margin-top: auto; padding: 12px; background: white;
-            text-align: center; font-size: 11px; font-weight: 600;
-            color: #7f8c8d; border-top: 1px solid #f1f1f1;
-            letter-spacing: 0.5px;
+            margin-top: auto; padding: 15px; background: white;
+            text-align: center; font-size: 11px; color: #7f8c8d;
+            border-top: 1px solid #f1f1f1; line-height: 1.5;
         }
         footer b { color: var(--dark); }
+        footer a { color: var(--purple-dark); text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header>
         <button class="menu-btn" id="openMenuBtn">☰</button>
-        <div class="app-title">Timer Hafalan Anak</div>
+        <div class="app-title">Media Hafalan Anak</div>
     </header>
 
     <div class="overlay" id="overlay"></div>
@@ -180,24 +178,18 @@
             <div style="margin-bottom:8px;">
                 <label style="font-size:12px; font-weight:bold;">Waktu Menghafal:</label>
                 <select id="studySoundOpt" style="width:100%; padding:5px; margin-top:2px;">
-                    <option value="short1">Happy Bell Ring (Pendek & Nyaring)</option>
-                    <option value="short2">Sweet Marimba Pop (Pendek & Catchy)</option>
-                    <option value="short3">Twin Crystal Chime (Pendek & Jernih)</option>
-                    <option value="long1">Classic Clock Melody (Panjang Catchy)</option>
-                    <option value="long2">Playful Playground Bells (Panjang Nyaring)</option>
-                    <option value="long3">Energetic Uplift Ring (Panjang Tegas)</option>
+                    <option value="./nightingale_samsung.mp3">Nightingale Samsung (Kustom Keren)</option>
+                    <option value="short1">Happy Bell Ring (Sintetis Pendek)</option>
+                    <option value="long1">Classic Clock Melody (Sintetis Panjang)</option>
                 </select>
                 <button onclick="testAlarm('study')" style="font-size:11px; margin-top:3px; padding:3px 8px;">🔊 Test Suara</button>
             </div>
             <div>
                 <label style="font-size:12px; font-weight:bold;">Waktu Istirahat:</label>
                 <select id="breakSoundOpt" style="width:100%; padding:5px; margin-top:2px;">
-                    <option value="short1">Happy Bell Ring (Pendek & Nyaring)</option>
-                    <option value="short2">Sweet Marimba Pop (Pendek & Catchy)</option>
-                    <option value="short3">Twin Crystal Chime (Pendek & Jernih)</option>
-                    <option value="long1">Classic Clock Melody (Panjang Catchy)</option>
-                    <option value="long2">Playful Playground Bells (Panjang Nyaring)</option>
-                    <option value="long3">Energetic Uplift Ring (Panjang Tegas)</option>
+                    <option value="./nightingale_samsung.mp3">Nightingale Samsung (Kustom Keren)</option>
+                    <option value="short2">Sweet Marimba Pop (Sintetis Pendek)</option>
+                    <option value="long2">Playful Playground Bells (Sintetis Panjang)</option>
                 </select>
                 <button onclick="testAlarm('break')" style="font-size:11px; margin-top:3px; padding:3px 8px;">🔊 Test Suara</button>
             </div>
@@ -278,12 +270,10 @@
         </div>
     </div>
 
-    <footer style="margin-top: auto; padding: 15px; background: white; text-align: center; font-size: 11px; color: #7f8c8d; border-top: 1px solid #f1f1f1;">
+    <footer>
         Dibuat dengan ❤️ oleh <b>Adrian Pradipta</b><br>
         Jakarta @2026<br>
-        <a href="https://www.instagram.com/adriannpradipta" style="color: var(--purple-dark); text-decoration: none; font-weight: bold;">
-            @adriannpradipta
-        </a>
+        <a href="https://www.instagram.com/adrianihsan" target="_blank">@adrianihsan</a>
     </footer>
 
     <script>
@@ -330,8 +320,23 @@
             document.getElementById('contentReports').classList.toggle('active', tab === 'reports');
         }
 
-        // --- POLYPHONIC AUDIO SYNTHESIZER ---
+        // --- DUAL-ENGINE AUDIO HANDLER (LOCAL FILE + SYNTHESIZER FALLBACK) ---
         function playAudioTone(soundType) {
+            // Jika memilih file mp3 kustom eksternal lokal
+            if (soundType.startsWith('./') || soundType.endsWith('.mp3')) {
+                try {
+                    const localAudio = new Audio(soundType);
+                    localAudio.play();
+                } catch (err) {
+                    console.log("Gagal memutar file audio lokal, dialihkan ke sintetis", err);
+                    triggerFallbackSynthesizer('short1');
+                }
+                return;
+            }
+            triggerFallbackSynthesizer(soundType);
+        }
+
+        function triggerFallbackSynthesizer(typeKey) {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const now = audioCtx.currentTime;
 
@@ -345,17 +350,14 @@
                 osc.start(start); osc.stop(start + duration);
             }
 
-            switch(soundType) {
+            switch(typeKey) {
                 case 'short1': playNote(1567.98, 'sine', now, 0.15, 0.4); playNote(1975.53, 'sine', now + 0.08, 0.2, 0.4); break;
                 case 'short2': playNote(1046.50, 'triangle', now, 0.08, 0.3); playNote(1318.51, 'triangle', now + 0.06, 0.08, 0.3); playNote(1567.98, 'triangle', now + 0.12, 0.15, 0.3); break;
-                case 'short3': playNote(2093.00, 'sine', now, 0.1, 0.3); playNote(2093.00, 'sine', now + 0.15, 0.2, 0.2); break;
                 case 'long1': 
                     let m1 = [523.25, 659.25, 587.33, 392.00];
                     m1.forEach((f, i) => { playNote(f, 'sine', now + (i * 0.25), 0.3, 0.4); });
-                    m1.forEach((f, i) => { playNote(f * 2, 'sine', now + 1.0 + (i * 0.25), 0.3, 0.3); });
                     break;
                 case 'long2': for(let loop=0; loop<4; loop++) { let t = now + (loop * 0.5); playNote(1318.51, 'sine', t, 0.12, 0.3); playNote(1567.98, 'sine', t + 0.15, 0.12, 0.3); } break;
-                case 'long3': for(let i=0; i<8; i++) { playNote(880 + (i * 100), 'triangle', now + (i * 0.15), 0.2, 0.3); playNote(1760, 'sine', now + 1.2 + (i * 0.08), 0.1, 0.3); } break;
             }
         }
 
@@ -401,7 +403,7 @@
             }, 1000);
         }
 
-        // --- ANTI-CONFLICT TOUCH / SWIPE HOLD ENGINE ---
+        // --- ANTI-CONFLICT HOLD ENGINE ---
         function setupAllHoldButtons() {
             document.querySelectorAll('.timer-card, .break-card').forEach(card => {
                 bindSmartHoldEvent(card, 1000, () => {
@@ -498,7 +500,7 @@
             }
         }
 
-        // --- DASHBOARD DATA REPORT LOGIC ---
+        // --- REPORT LOGIC ---
         function renderReports() {
             const period = document.getElementById('reportPeriod').value;
             const now = new Date(); let startTimeLimit = 0;
@@ -536,7 +538,7 @@
             });
         }
 
-        // --- TAB PENGATURAN: EXPORT/IMPORT DAFTAR MATERI SAJA ---
+        // --- BACKUP / SHARING SYSTEM ---
         function exportMateriOnly() {
             let cleanMateri = surahData.map(s => ({ name: s.name, count: 0, lastSucceed: 0 }));
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cleanMateri));
@@ -556,13 +558,12 @@
                         localStorage.setItem('surahDataV5', JSON.stringify(surahData));
                         renderSurahSettings();
                         alert("Sukses! Daftar materi baru berhasil dimuat.");
-                    } else { alert("Struktur file sharing materi tidak valid."); }
+                    } else { alert("Struktur file tidak valid."); }
                 } catch (err) { alert("Gagal membaca berkas JSON."); }
             };
             reader.readAsText(file);
         }
 
-        // --- TAB STATISTIK: BACKUP/RESTORE DATA STATISTIK PERSONAL ---
         function exportStatistikOnly() {
             let dataPackage = { surahData: surahData, sessionLogs: sessionLogs };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataPackage));
