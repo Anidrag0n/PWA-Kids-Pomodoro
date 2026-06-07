@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
-    <title>Quran & Doa Memorization PWA v4</title>
+    <title>Quran & Doa Memorization PWA v5</title>
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlF1cmFuIE1lbW9yaXphdGlvbiIsCiAgInNob3J0X25hbWUiOiAiUXVyYW4gVGltZXIiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2YxZmFlZSIsCiAgInRoZW1lX2NvbG9yIjogIiM0NTdiOWQiCn0=">
     
     <style>
@@ -106,7 +106,7 @@
             text-align: center; font-size: 16px; font-weight: bold;
         }
 
-        /* Randomizer Section Rombak */
+        /* Randomizer Section */
         .random-section {
             margin: 10px 15px auto 15px; padding: 15px; background: white;
             border-radius: 16px; border: 2px solid var(--purple-dark);
@@ -115,39 +115,16 @@
         .surah-display { font-size: 20px; font-weight: bold; color: var(--purple-dark); min-height: 28px; }
         .surah-count-detail { font-size: 11px; color: #7f8c8d; margin-top: 2px; min-height: 14px; }
         
-        /* Layout Dua Tombol Sejajar */
-        .dual-btn-container {
-            display: flex; gap: 10px; justify-content: center; margin-top: 12px;
-        }
-        .action-btn {
-            flex: 1; padding: 14px 0; font-size: 14px; font-weight: bold;
-            border-radius: 12px; cursor: pointer; outline: none; border: none;
-        }
-        .click-btn {
-            background: var(--purple-pastel); color: var(--purple-dark);
-            border: 2px solid var(--purple-dark);
-        }
+        .dual-btn-container { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+        .action-btn { flex: 1; padding: 14px 0; font-size: 14px; font-weight: bold; border-radius: 12px; cursor: pointer; border: none; outline: none; }
+        .click-btn { background: var(--purple-pastel); color: var(--purple-dark); border: 2px solid var(--purple-dark); }
         .click-btn:active { background: #E1BEE7; }
         
-        .hold-register-btn {
-            background: #FADBD8; color: var(--accent);
-            border: 2px solid var(--accent); position: relative;
-        }
-        .hold-register-btn.disabled {
-            background: #EAEDED; color: var(--gray-disabled);
-            border: 2px solid var(--gray-disabled); cursor: not-allowed;
-        }
+        .hold-register-btn { background: #FADBD8; color: var(--accent); border: 2px solid var(--accent); position: relative; }
+        .hold-register-btn.disabled { background: #EAEDED; color: var(--gray-disabled); border: 2px solid var(--gray-disabled); cursor: not-allowed; }
 
-        /* Visual Hold Progress Bar */
-        .hold-progress-bar {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 6px;
-            background: var(--accent); transform: scaleX(0); transform-origin: left;
-        }
-
-        .overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.3); z-index: 99;
-        }
+        .hold-progress-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: var(--accent); transform: scaleX(0); transform-origin: left; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 99; }
         .overlay.active { display: block; }
 
         .setting-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; align-items: center; }
@@ -155,13 +132,19 @@
         .report-box { background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
         .report-box span { display: block; font-size: 16px; font-weight: bold; color: var(--dark); }
         .report-box label { font-size: 10px; color: #718096; }
+
+        .backup-section-box {
+            background: #f7f9fa; border: 1px dashed var(--dark); padding: 10px; border-radius: 8px; margin-top: 15px;
+        }
+        .backup-title { font-size: 12px; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; color: var(--dark); opacity: 0.8; }
+        .backup-btn { width: 100%; padding: 7px; margin-bottom: 5px; font-size: 11px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <header>
         <button class="menu-btn" id="openMenuBtn">☰</button>
-        <div class="app-title">Hafalan Quran & Doa v4</div>
+        <div class="app-title">Hafalan Quran & Doa v5</div>
     </header>
 
     <div class="overlay" id="overlay"></div>
@@ -174,43 +157,45 @@
         </div>
 
         <div id="contentSettings" class="tab-content active">
-            <h4>Daftar Hafalan & Log Data</h4>
+            <h4>Daftar Hafalan & Materi</h4>
             <div style="display:flex; gap:5px;">
                 <input type="text" id="newSurah" placeholder="Nama materi baru..." style="flex:1; padding:6px; border:1px solid #ccc; border-radius:4px;">
                 <button onclick="addSurah()" style="background:var(--purple-dark); color:white; border:none; padding:0 10px; border-radius:4px;">Tambah</button>
             </div>
             <div id="surahManagerList" style="margin-top:10px; max-height:140px; overflow-y:auto; border:1px solid #eee; padding:5px; font-size:12px;"></div>
             
-            <h4 style="margin-top:15px; margin-bottom: 5px;">🎵 Pilihan Nada Alarm</h4>
+            <h4 style="margin-top:15px; margin-bottom: 5px;">🎵 Pilihan Nada Alarm Melodis</h4>
             <div style="margin-bottom:8px;">
                 <label style="font-size:12px; font-weight:bold;">Waktu Menghafal:</label>
                 <select id="studySoundOpt" style="width:100%; padding:5px; margin-top:2px;">
-                    <option value="short1">Chirp Tinggi (Pendek & Nyaring)</option>
-                    <option value="short2">Beep Ganda Cepat (Pendek & Nyaring)</option>
-                    <option value="short3">Alert Triple Tajam (Pendek & Nyaring)</option>
-                    <option value="long1">Nightingale Arpeggio (Panjang Melodis)</option>
-                    <option value="long2">Pulsating Phone Ring (Panjang Nyaring)</option>
-                    <option value="long3">Siren Eskalasi (Panjang Unik)</option>
+                    <option value="short1">Happy Bell Ring (Pendek & Nyaring)</option>
+                    <option value="short2">Sweet Marimba Pop (Pendek & Catchy)</option>
+                    <option value="short3">Twin Crystal Chime (Pendek & Jernih)</option>
+                    <option value="long1">Classic Clock Melody (Panjang Catchy)</option>
+                    <option value="long2">Playful Playground Bells (Panjang Nyaring)</option>
+                    <option value="long3">Energetic Uplift Ring (Panjang Tegas)</option>
                 </select>
                 <button onclick="testAlarm('study')" style="font-size:11px; margin-top:3px; padding:3px 8px;">🔊 Test Suara</button>
             </div>
             <div>
                 <label style="font-size:12px; font-weight:bold;">Waktu Istirahat:</label>
                 <select id="breakSoundOpt" style="width:100%; padding:5px; margin-top:2px;">
-                    <option value="short1">Chirp Tinggi (Pendek & Nyaring)</option>
-                    <option value="short2">Beep Ganda Cepat (Pendek & Nyaring)</option>
-                    <option value="short3">Alert Triple Tajam (Pendek & Nyaring)</option>
-                    <option value="long1">Nightingale Arpeggio (Panjang Melodis)</option>
-                    <option value="long2">Pulsating Phone Ring (Panjang Nyaring)</option>
-                    <option value="long3">Siren Eskalasi (Panjang Unik)</option>
+                    <option value="short1">Happy Bell Ring (Pendek & Nyaring)</option>
+                    <option value="short2">Sweet Marimba Pop (Pendek & Catchy)</option>
+                    <option value="short3">Twin Crystal Chime (Pendek & Jernih)</option>
+                    <option value="long1">Classic Clock Melody (Panjang Catchy)</option>
+                    <option value="long2">Playful Playground Bells (Panjang Nyaring)</option>
+                    <option value="long3">Energetic Uplift Ring (Panjang Tegas)</option>
                 </select>
                 <button onclick="testAlarm('break')" style="font-size:11px; margin-top:3px; padding:3px 8px;">🔊 Test Suara</button>
             </div>
 
-            <h4 style="margin-top:15px;">Backup Eksosistem (Pindah HP)</h4>
-            <button onclick="exportSurah()" style="width:100%; padding:6px; margin-bottom:5px; font-size:12px;">Export Seluruh Data (.json)</button>
-            <input type="file" id="importFile" onchange="importSurah(event)" style="display:none;">
-            <button onclick="document.getElementById('importFile').click()" style="width:100%; padding:6px; font-size:12px;">Import Seluruh Data (.json)</button>
+            <div class="backup-section-box" style="border-color: var(--purple-dark);">
+                <div class="backup-title" style="color: var(--purple-dark);">Sharing List Materi (Tanpa Nilai)</div>
+                <button class="backup-btn" onclick="exportMateriOnly()" style="background: var(--purple-pastel); color: var(--purple-dark); border: 1px solid var(--purple-dark);">Export List Materi (.json)</button>
+                <input type="file" id="importMateriFile" onchange="importMateriOnly(event)" style="display:none;">
+                <button class="backup-btn" onclick="document.getElementById('importMateriFile').click()" style="background: white; border: 1px solid #ccc;">Import List Materi (.json)</button>
+            </div>
         </div>
 
         <div id="contentReports" class="tab-content">
@@ -226,8 +211,16 @@
                 <div class="report-box"><span id="repSuccessCount">0</span><label>Hafalan Berhasil</label></div>
                 <div class="report-box"><span id="repTopSurah">-</span><label>Paling Sering</label></div>
             </div>
+            
+            <div class="backup-section-box" style="border-color: var(--accent);">
+                <div class="backup-title" style="color: var(--accent);">Progres & Statistik Personal</div>
+                <button class="backup-btn" onclick="exportStatistikOnly()" style="background: #FADBD8; color: var(--accent); border: 1px solid var(--accent);">Backup Statistik Saya (.json)</button>
+                <input type="file" id="importStatistikFile" onchange="importStatistikOnly(event)" style="display:none;">
+                <button class="backup-btn" onclick="document.getElementById('importStatistikFile').click()" style="background: white; border: 1px solid #ccc;">Restore Statistik Saya (.json)</button>
+            </div>
+
             <h4 style="margin-top:15px; margin-bottom:5px;">📋 Log Riwayat Aktivitas</h4>
-            <div id="historyLogList" style="font-size:11px; max-height:180px; overflow-y:auto; border:1px solid #eee; padding:5px; background:#fafafa;"></div>
+            <div id="historyLogList" style="font-size:11px; max-height:140px; overflow-y:auto; border:1px solid #eee; padding:5px; background:#fafafa;"></div>
         </div>
     </div>
 
@@ -266,7 +259,6 @@
         
         <div class="dual-btn-container">
             <button class="action-btn click-btn" id="randomClickBtn" onclick="executeWeightedRandom()">Acak Materi 🎲</button>
-            
             <button class="action-btn holdable hold-register-btn disabled" id="holdRegisterBtn">
                 Hafal! 🎉
                 <div class="hold-progress-bar"></div>
@@ -284,8 +276,8 @@
             "Surat Al-Fatihah", "Surat Al-Ikhlas", "Surat An-Nas", "Surat Al-Falaq", "Surat Al-Kafirun", "Surat Al-Insyirah", "Surat Quraisy"
         ];
         
-        let surahData = JSON.parse(localStorage.getItem('surahDataV4')) || defaultSurahs.map(name => ({ name: name, count: 0, lastSucceed: 0 }));
-        let sessionLogs = JSON.parse(localStorage.getItem('sessionLogsV4')) || [];
+        let surahData = JSON.parse(localStorage.getItem('surahDataV5')) || defaultSurahs.map(name => ({ name: name, count: 0, lastSucceed: 0 }));
+        let sessionLogs = JSON.parse(localStorage.getItem('sessionLogsV5')) || [];
 
         let countdownInterval;
         let totalDurationAllocated = 0;
@@ -318,31 +310,48 @@
             document.getElementById('contentReports').classList.toggle('active', tab === 'reports');
         }
 
-        // --- WEB AUDIO API ENGINE ---
+        // --- POLYPHONIC AUDIO SYNTHESIZER (UPGRADE NADA CERIA & NYARING) ---
         function playAudioTone(soundType) {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const now = audioCtx.currentTime;
 
-            function osc(freq, type, duration, startTime, startGain=0.3) {
-                const oscillator = audioCtx.createOscillator();
+            function playNote(freq, type, start, duration, volume = 0.25) {
+                const osc = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
-                oscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
-                oscillator.frequency.setValueAtTime(freq, startTime); oscillator.type = type;
-                gainNode.gain.setValueAtTime(startGain, startTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-                oscillator.start(startTime); oscillator.stop(startTime + duration);
+                osc.type = type; osc.frequency.setValueAtTime(freq, start);
+                gainNode.gain.setValueAtTime(volume, start);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, start + duration);
+                osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+                osc.start(start); osc.stop(start + duration);
             }
 
             switch(soundType) {
-                case 'short1': osc(2600, 'sine', 0.12, now, 0.4); break;
-                case 'short2': osc(1900, 'square', 0.06, now, 0.2); osc(1900, 'square', 0.06, now + 0.1, 0.2); break;
-                case 'short3': osc(2200, 'triangle', 0.05, now, 0.4); osc(2200, 'triangle', 0.05, now + 0.08, 0.4); osc(2200, 'triangle', 0.05, now + 0.16, 0.4); break;
-                case 'long1': 
-                    let notes = [523.25, 659.25, 783.99, 987.77]; 
-                    for(let l=0; l<3; l++) { notes.forEach((n, i) => { osc(n, 'sine', 0.2, now + (l * 0.8) + (i * 0.15), 0.3); }); }
+                case 'short1': // Happy Bell Ring
+                    playNote(1567.98, 'sine', now, 0.15, 0.4); playNote(1975.53, 'sine', now + 0.08, 0.2, 0.4);
                     break;
-                case 'long2': for(let i=0; i<12; i++) { osc(i % 2 === 0 ? 480 : 420, 'square', 0.08, now + (i * 0.12), 0.15); } break;
-                case 'long3': for(let i=0; i<25; i++) { osc(500 + (i * 35), 'sawtooth', 0.07, now + (i * 0.08), 0.04); } break;
+                case 'short2': // Sweet Marimba Pop
+                    playNote(1046.50, 'triangle', now, 0.08, 0.3); playNote(1318.51, 'triangle', now + 0.06, 0.08, 0.3); playNote(1567.98, 'triangle', now + 0.12, 0.15, 0.3);
+                    break;
+                case 'short3': // Twin Crystal Chime
+                    playNote(2093.00, 'sine', now, 0.1, 0.3); playNote(2093.00, 'sine', now + 0.15, 0.2, 0.2);
+                    break;
+                case 'long1': // Classic Clock Melody (Catchy Arpeggio)
+                    let m1 = [523.25, 659.25, 587.33, 392.00];
+                    m1.forEach((f, i) => { playNote(f, 'sine', now + (i * 0.25), 0.3, 0.4); });
+                    m1.forEach((f, i) => { playNote(f * 2, 'sine', now + 1.0 + (i * 0.25), 0.3, 0.3); });
+                    break;
+                case 'long2': // Playful Playground Bells
+                    for(let loop=0; loop<4; loop++) {
+                        let t = now + (loop * 0.5);
+                        playNote(1318.51, 'sine', t, 0.12, 0.3); playNote(1567.98, 'sine', t + 0.15, 0.12, 0.3);
+                    }
+                    break;
+                case 'long3': // Energetic Uplift Ring
+                    for(let i=0; i<8; i++) {
+                        playNote(880 + (i * 100), 'triangle', now + (i * 0.15), 0.2, 0.3);
+                        playNote(1760, 'sine', now + 1.2 + (i * 0.08), 0.1, 0.3);
+                    }
+                    break;
             }
         }
 
@@ -367,7 +376,7 @@
 
             let timeRemaining = totalDurationAllocated;
             sessionLogs.push({ type: mode, duration: minutes, timestamp: Date.now() });
-            localStorage.setItem('sessionLogsV4', JSON.stringify(sessionLogs));
+            localStorage.setItem('sessionLogsV5', JSON.stringify(sessionLogs));
 
             countdownInterval = setInterval(() => {
                 let mins = Math.floor(timeRemaining / 60);
@@ -390,7 +399,6 @@
 
         // --- ANTI-CONFLICT TOUCH / SWIPE HOLD ENGINE ---
         function setupAllHoldButtons() {
-            // Setup Waktu Belajar & Istirahat (Hold 1 Detik)
             document.querySelectorAll('.timer-card, .break-card').forEach(card => {
                 bindSmartHoldEvent(card, 1000, () => {
                     let mins = parseInt(card.getAttribute('data-duration'));
@@ -399,54 +407,32 @@
                 });
             });
 
-            // Setup Tombol Hafal Tersegmentasi Kanan (Hold 2 Detik)
             const holdBtn = document.getElementById('holdRegisterBtn');
             bindSmartHoldEvent(holdBtn, 2000, () => {
-                if(currentSelectedSurahIndex !== -1) {
-                    executeSuccessRegistration();
-                }
+                if(currentSelectedSurahIndex !== -1) { executeSuccessRegistration(); }
             });
         }
 
         function bindSmartHoldEvent(element, duration, callback) {
-            let holdTimer;
-            let startX, startY;
+            let holdTimer; let startX, startY;
             const bar = element.querySelector('.hold-progress-bar');
 
             element.addEventListener('pointerdown', (e) => {
                 if (element.classList.contains('disabled')) return;
-                
-                startX = e.clientX;
-                startY = e.clientY;
-
-                if (bar) {
-                    bar.style.transition = `transform ${duration}ms linear`;
-                    bar.style.transform = 'scaleX(1)';
-                }
-
-                holdTimer = setTimeout(() => {
-                    callback();
-                    clearHold();
-                }, duration);
+                startX = e.clientX; startY = e.clientY;
+                if (bar) { bar.style.transition = `transform ${duration}ms linear`; bar.style.transform = 'scaleX(1)'; }
+                holdTimer = setTimeout(() => { callback(); clearHold(); }, duration);
             });
 
             element.addEventListener('pointermove', (e) => {
                 if (!holdTimer) return;
-                // Jika terdeteksi geseran jari lebih dari 8 pixel (indikasi swipe), batalkan fungsi hold
-                let deltaX = Math.abs(e.clientX - startX);
-                let deltaY = Math.abs(e.clientY - startY);
-                if (deltaX > 8 || deltaY > 8) {
-                    clearHold();
-                }
+                let deltaX = Math.abs(e.clientX - startX); let deltaY = Math.abs(e.clientY - startY);
+                if (deltaX > 8 || deltaY > 8) { clearHold(); }
             });
 
             function clearHold() {
-                clearTimeout(holdTimer);
-                holdTimer = null;
-                if (bar) {
-                    bar.style.transition = 'none';
-                    bar.style.transform = 'scaleX(0)';
-                }
+                clearTimeout(holdTimer); holdTimer = null;
+                if (bar) { bar.style.transition = 'none'; bar.style.transform = 'scaleX(0)'; }
             }
 
             element.addEventListener('pointerup', clearHold);
@@ -479,7 +465,6 @@
                 document.getElementById('surahResult').textContent = selected.name;
                 document.getElementById('surahCountDetail').textContent = `Sudah dihafalkan: ${selected.count} kali`;
                 
-                // Aktifkan Tombol Hold Hafal!
                 const holdBtn = document.getElementById('holdRegisterBtn');
                 holdBtn.classList.remove('disabled');
                 playAudioTone('short1');
@@ -497,16 +482,14 @@
                     timestamp: Date.now()
                 });
 
-                localStorage.setItem('surahDataV4', JSON.stringify(surahData));
-                localStorage.setItem('sessionLogsV4', JSON.stringify(sessionLogs));
+                localStorage.setItem('surahDataV5', JSON.stringify(surahData));
+                localStorage.setItem('sessionLogsV5', JSON.stringify(sessionLogs));
                 
                 document.getElementById('surahResult').textContent = "🎉 Berhasil Dicatat! 🎉";
                 document.getElementById('surahCountDetail').textContent = `Skor hafalan untuk ${surahData[currentSelectedSurahIndex].name} bertambah.`;
                 
-                // Kunci kembali tombol Hafal! sampai tombol acak ditekan lagi
                 currentSelectedSurahIndex = -1;
                 document.getElementById('holdRegisterBtn').classList.add('disabled');
-                
                 playAudioTone('short2');
             }
         }
@@ -514,8 +497,7 @@
         // --- DASHBOARD DATA REPORT LOGIC ---
         function renderReports() {
             const period = document.getElementById('reportPeriod').value;
-            const now = new Date();
-            let startTimeLimit = 0;
+            const now = new Date(); let startTimeLimit = 0;
 
             if(period === 'daily') startTimeLimit = new Date(now.setHours(0,0,0,0)).getTime();
             else if(period === 'weekly') startTimeLimit = Date.now() - (7 * 24 * 60 * 60 * 1000);
@@ -523,32 +505,25 @@
             else if(period === 'annually') startTimeLimit = Date.now() - (365 * 24 * 60 * 60 * 1000);
 
             let filteredLogs = sessionLogs.filter(log => log.timestamp >= startTimeLimit);
-
-            let studyMinutes = 0, breakMinutes = 0, successCount = 0;
-            let surahFreq = {};
+            let studyMinutes = 0, breakMinutes = 0, successCount = 0; let surahFreq = {};
 
             filteredLogs.forEach(log => {
                 if(log.type === 'study') studyMinutes += log.duration;
                 if(log.type === 'break') breakMinutes += log.duration;
                 if(log.type === 'success_memorize') {
-                    successCount++;
-                    surahFreq[log.surahName] = (surahFreq[log.surahName] || 0) + 1;
+                    successCount++; surahFreq[log.surahName] = (surahFreq[log.surahName] || 0) + 1;
                 }
             });
 
-            let topSurah = "-";
-            let maxFreq = 0;
-            for(let key in surahFreq) {
-                if(surahFreq[key] > maxFreq) { maxFreq = surahFreq[key]; topSurah = key; }
-            }
+            let topSurah = "-"; let maxFreq = 0;
+            for(let key in surahFreq) { if(surahFreq[key] > maxFreq) { maxFreq = surahFreq[key]; topSurah = key; } }
 
             document.getElementById('repStudyTime').textContent = studyMinutes + " mnt";
             document.getElementById('repBreakTime').textContent = breakMinutes + " mnt";
             document.getElementById('repSuccessCount').textContent = successCount;
             document.getElementById('repTopSurah').textContent = topSurah !== "-" ? `${topSurah} (${maxFreq}x)` : "-";
 
-            const logContainer = document.getElementById('historyLogList');
-            logContainer.innerHTML = '';
+            const logContainer = document.getElementById('historyLogList'); logContainer.innerHTML = '';
             filteredLogs.slice().reverse().forEach(log => {
                 let dateStr = new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 if(log.type === 'study') logContainer.innerHTML += `<div>[${dateStr}] 📖 Menghafal <b>${log.duration} mnt</b></div>`;
@@ -557,14 +532,67 @@
             });
         }
 
-        // --- SETTINGS UTILITIES ---
+        // --- TAB PENGATURAN: EXPORT/IMPORT DAFTAR MATERI SAJA (FOR PUBLIC) ---
+        function exportMateriOnly() {
+            // Hanya mengekstrak nama-nama materi, mereset semua count dan timestamp ke 0 demi privasi
+            let cleanMateri = surahData.map(s => ({ name: s.name, count: 0, lastSucceed: 0 }));
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cleanMateri));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr); dlAnchor.setAttribute("download", "daftar_materi_hafalan.json");
+            document.body.appendChild(dlAnchor); dlAnchor.click(); dlAnchor.remove();
+        }
+
+        function importMateriOnly(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if(Array.isArray(parsed) && parsed[0].hasOwnProperty('name')) {
+                        surahData = parsed.map(s => ({ name: s.name, count: 0, lastSucceed: 0 }));
+                        localStorage.setItem('surahDataV5', JSON.stringify(surahData));
+                        renderSurahSettings();
+                        alert("Sukses! Daftar materi baru berhasil dimuat (Statistik lama anak Anda tetap aman).");
+                    } else { alert("Struktur file sharing materi tidak valid."); }
+                } catch (err) { alert("Gagal membaca berkas JSON."); }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- TAB STATISTIK: BACKUP/RESTORE DATA STATISTIK PERSONAL (FOR PRIVATE USE) ---
+        function exportStatistikOnly() {
+            let dataPackage = { surahData: surahData, sessionLogs: sessionLogs };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataPackage));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr); dlAnchor.setAttribute("download", "backup_statistik_personal.json");
+            document.body.appendChild(dlAnchor); dlAnchor.click(); dlAnchor.remove();
+        }
+
+        function importStatistikOnly(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if(parsed.surahData && parsed.sessionLogs) {
+                        surahData = parsed.surahData; sessionLogs = parsed.sessionLogs;
+                        localStorage.setItem('surahDataV5', JSON.stringify(surahData));
+                        localStorage.setItem('sessionLogsV5', JSON.stringify(sessionLogs));
+                        renderReports();
+                        alert("Restorasi Berhasil! Seluruh histori pencapaian personal anak Anda telah pulih sempurna.");
+                    } else { alert("Berkas ini bukan arsip statistik personal yang valid."); }
+                } catch (err) { alert("Gagal memproses data pemulihan."); }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- SETTINGS MGR ---
         function renderSurahSettings() {
-            const container = document.getElementById('surahManagerList');
-            container.innerHTML = '';
+            const container = document.getElementById('surahManagerList'); container.innerHTML = '';
             surahData.forEach((s, idx) => {
                 container.innerHTML += `
                     <div class="setting-item">
-                        <span><b>${s.name}</b> (Hafal: ${s.count}x)</span>
+                        <span><b>${s.name}</b></span>
                         <button onclick="deleteSurah(${idx})" style="color:var(--accent); border:none; background:none; cursor:pointer; font-weight:bold;">Hapus</button>
                     </div>
                 `;
@@ -572,49 +600,17 @@
         }
 
         function addSurah() {
-            const input = document.getElementById('newSurah');
-            const name = input.value.trim();
+            const input = document.getElementById('newSurah'); const name = input.value.trim();
             if(name) {
                 surahData.push({ name: name, count: 0, lastSucceed: 0 });
-                localStorage.setItem('surahDataV4', JSON.stringify(surahData));
+                localStorage.setItem('surahDataV5', JSON.stringify(surahData));
                 input.value = ''; renderSurahSettings();
             }
         }
 
         function deleteSurah(index) {
-            surahData.splice(index, 1);
-            localStorage.setItem('surahDataV4', JSON.stringify(surahData));
+            surahData.splice(index, 1); localStorage.setItem('surahDataV5', JSON.stringify(surahData));
             renderSurahSettings();
-        }
-
-        // INTEGRASI DUA DATABASE UTAMA DALAM SATU FILE EKSPORT
-        function exportSurah() {
-            let dataPackage = { surahData: surahData, sessionLogs: sessionLogs };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataPackage));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", "data_lengkap_hafalan_pwa_v4.json");
-            document.body.appendChild(dlAnchor); dlAnchor.click(); dlAnchor.remove();
-        }
-
-        function importSurah(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if(parsed.surahData && parsed.sessionLogs) {
-                        surahData = parsed.surahData;
-                        sessionLogs = parsed.sessionLogs;
-                        localStorage.setItem('surahDataV4', JSON.stringify(surahData));
-                        localStorage.setItem('sessionLogsV4', JSON.stringify(sessionLogs));
-                        renderSurahSettings();
-                        alert("Sukses! Seluruh progres, riwayat hafalan lama, dan statistik berhasil dipulihkan!");
-                    } else { alert("Format arsip cadangan tidak cocok."); }
-                } catch (err) { alert("Gagal membaca struktur file JSON."); }
-            };
-            reader.readAsText(file);
         }
     </script>
 </body>
