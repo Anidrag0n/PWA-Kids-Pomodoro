@@ -140,7 +140,6 @@
         .backup-title { font-size: 12px; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; color: var(--dark); opacity: 0.8; }
         .backup-btn { width: 100%; padding: 7px; margin-bottom: 5px; font-size: 11px; font-weight: bold; cursor: pointer; }
 
-        /* Footer dengan Kontak Sosial Media Aman */
         footer {
             margin-top: auto; padding: 15px; background: white;
             text-align: center; font-size: 11px; color: #7f8c8d;
@@ -273,7 +272,7 @@
     <footer>
         Dibuat dengan ❤️ oleh <b>Adrian Pradipta</b><br>
         Jakarta @2026<br>
-        <a href="https://www.instagram.com/adrianihsan" target="_blank">@adrianihsan</a>
+        <a href="https://www.instagram.com/adriannpradipta" target="_blank">@adriannpradipta</a>
     </footer>
 
     <script>
@@ -289,9 +288,12 @@
         let surahData = JSON.parse(localStorage.getItem('surahDataV5')) || defaultSurahs.map(name => ({ name: name, count: 0, lastSucceed: 0 }));
         let sessionLogs = JSON.parse(localStorage.getItem('sessionLogsV5')) || [];
 
-        let countdownInterval;
         let totalDurationAllocated = 0;
         let currentSelectedSurahIndex = -1;
+        
+        // Inisialisasi Instansi Web Worker Latar Belakang
+        let timerWorker = null;
+        let globalCurrentActiveMode = 'study';
 
         const circleRadius = 68;
         const circumference = 2 * Math.PI * circleRadius;
@@ -304,8 +306,41 @@
             document.getElementById('closeMenuBtn').addEventListener('click', () => toggleMenu(false));
             document.getElementById('overlay').addEventListener('click', () => toggleMenu(false));
             
+            initBackgroundWebWorker();
             setupAllHoldButtons();
         };
+
+        // --- ENGINE WEB WORKER (ANTI-SLEEP PERSISTENCE) ---
+        function initBackgroundWebWorker() {
+            if (window.Worker) {
+                // Instansiasi worker dari file lokal eksternal di GitHub
+                timerWorker = new Worker('./timer-worker.js');
+                
+                // Dengarkan feedback detak detik dari thread background
+                timerWorker.addEventListener('message', (e) => {
+                    const res = e.data;
+                    const display = document.getElementById('countdown');
+                    const progressBar = document.getElementById('progressBar');
+
+                    if (res.status === 'tick') {
+                        let mins = Math.floor(res.timeRemaining / 60);
+                        let secs = res.timeRemaining % 60;
+                        display.textContent = `${mins < 10 ? '0'+mins : mins}:${secs < 10 ? '0'+secs : secs}`;
+                        
+                        let offset = circumference - (res.timeRemaining / totalDurationAllocated) * circumference;
+                        progressBar.style.strokeDashoffset = offset;
+                    } 
+                    else if (res.status === 'completed') {
+                        progressBar.style.strokeDashoffset = circumference;
+                        const statusText = document.getElementById('timerStatus');
+                        const selectedSound = globalCurrentActiveMode === 'study' ? document.getElementById('studySoundOpt').value : document.getElementById('breakSoundOpt').value;
+                        
+                        playAudioTone(selectedSound);
+                        statusText.textContent = "Selesai 🎉";
+                    }
+                });
+            }
+        }
 
         function toggleMenu(open) {
             document.getElementById('sidebar').classList.toggle('active', open);
@@ -320,15 +355,13 @@
             document.getElementById('contentReports').classList.toggle('active', tab === 'reports');
         }
 
-        // --- DUAL-ENGINE AUDIO HANDLER (LOCAL FILE + SYNTHESIZER FALLBACK) ---
+        // --- AUDIO ENGINE ---
         function playAudioTone(soundType) {
-            // Jika memilih file mp3 kustom eksternal lokal
             if (soundType.startsWith('./') || soundType.endsWith('.mp3')) {
                 try {
                     const localAudio = new Audio(soundType);
                     localAudio.play();
                 } catch (err) {
-                    console.log("Gagal memutar file audio lokal, dialihkan ke sintetis", err);
                     triggerFallbackSynthesizer('short1');
                 }
                 return;
@@ -341,11 +374,9 @@
             const now = audioCtx.currentTime;
 
             function playNote(freq, type, start, duration, volume = 0.25) {
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
+                const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
                 osc.type = type; osc.frequency.setValueAtTime(freq, start);
-                gainNode.gain.setValueAtTime(volume, start);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, start + duration);
+                gainNode.gain.setValueAtTime(volume, start); gainNode.gain.exponentialRampToValueAtTime(0.001, start + duration);
                 osc.connect(gainNode); gainNode.connect(audioCtx.destination);
                 osc.start(start); osc.stop(start + duration);
             }
@@ -353,10 +384,7 @@
             switch(typeKey) {
                 case 'short1': playNote(1567.98, 'sine', now, 0.15, 0.4); playNote(1975.53, 'sine', now + 0.08, 0.2, 0.4); break;
                 case 'short2': playNote(1046.50, 'triangle', now, 0.08, 0.3); playNote(1318.51, 'triangle', now + 0.06, 0.08, 0.3); playNote(1567.98, 'triangle', now + 0.12, 0.15, 0.3); break;
-                case 'long1': 
-                    let m1 = [523.25, 659.25, 587.33, 392.00];
-                    m1.forEach((f, i) => { playNote(f, 'sine', now + (i * 0.25), 0.3, 0.4); });
-                    break;
+                case 'long1': let m1 = [523.25, 659.25, 587.33, 392.00]; m1.forEach((f, i) => { playNote(f, 'sine', now + (i * 0.25), 0.3, 0.4); }); break;
                 case 'long2': for(let loop=0; loop<4; loop++) { let t = now + (loop * 0.5); playNote(1318.51, 'sine', t, 0.12, 0.3); playNote(1567.98, 'sine', t + 0.15, 0.12, 0.3); } break;
             }
         }
@@ -366,11 +394,11 @@
             playAudioTone(opt);
         }
 
-        // --- TIMER ENGINE ---
+        // --- DELEGASI DISPATCH TIMER KE BACKGROUND WORKER ---
         function startTimer(minutes, mode) {
-            clearInterval(countdownInterval);
+            globalCurrentActiveMode = mode;
             totalDurationAllocated = minutes * 60;
-            const display = document.getElementById('countdown');
+            
             const statusText = document.getElementById('timerStatus');
             const progressBar = document.getElementById('progressBar');
             
@@ -380,30 +408,16 @@
                 statusText.textContent = "Istirahat ☕"; progressBar.style.stroke = "var(--secondary-dark)";
             }
 
-            let timeRemaining = totalDurationAllocated;
             sessionLogs.push({ type: mode, duration: minutes, timestamp: Date.now() });
-            localStorage.setItem('sessionLogsV5', JSON.stringify(sessionLogs));
+            localStorage.setItem('sessionLogsV4', JSON.stringify(sessionLogs));
 
-            countdownInterval = setInterval(() => {
-                let mins = Math.floor(timeRemaining / 60);
-                let secs = timeRemaining % 60;
-                display.textContent = `${mins < 10 ? '0'+mins : mins}:${secs < 10 ? '0'+secs : secs}`;
-                
-                let offset = circumference - (timeRemaining / totalDurationAllocated) * circumference;
-                progressBar.style.strokeDashoffset = offset;
-
-                if (timeRemaining <= 0) {
-                    clearInterval(countdownInterval);
-                    progressBar.style.strokeDashoffset = circumference;
-                    const selectedSound = mode === 'study' ? document.getElementById('studySoundOpt').value : document.getElementById('breakSoundOpt').value;
-                    playAudioTone(selectedSound);
-                    statusText.textContent = "Selesai 🎉";
-                }
-                timeRemaining--;
-            }, 1000);
+            // Perintah worker mandiri di background untuk menyalakan hitungan detik
+            if(timerWorker) {
+                timerWorker.postMessage({ command: 'start', duration: totalDurationAllocated });
+            }
         }
 
-        // --- ANTI-CONFLICT HOLD ENGINE ---
+        // --- HOLD CARD INTERACTION ENGINE ---
         function setupAllHoldButtons() {
             document.querySelectorAll('.timer-card, .break-card').forEach(card => {
                 bindSmartHoldEvent(card, 1000, () => {
@@ -458,8 +472,7 @@
 
             let totalWeight = 0;
             let pool = available.map(s => {
-                let weight = Math.max(1, 100 - (s.count * 12)); 
-                totalWeight += weight;
+                let weight = Math.max(1, 100 - (s.count * 12)); totalWeight += weight;
                 return { ...s, weightLimit: totalWeight };
             });
 
@@ -482,11 +495,7 @@
                 surahData[currentSelectedSurahIndex].count += 1;
                 surahData[currentSelectedSurahIndex].lastSucceed = Date.now();
                 
-                sessionLogs.push({
-                    type: 'success_memorize',
-                    surahName: surahData[currentSelectedSurahIndex].name,
-                    timestamp: Date.now()
-                });
+                sessionLogs.push({ type: 'success_memorize', surahName: surahData[currentSelectedSurahIndex].name, timestamp: Date.now() });
 
                 localStorage.setItem('surahDataV5', JSON.stringify(surahData));
                 localStorage.setItem('sessionLogsV5', JSON.stringify(sessionLogs));
@@ -538,7 +547,7 @@
             });
         }
 
-        // --- BACKUP / SHARING SYSTEM ---
+        // --- BACKUP SYSTEMS ---
         function exportMateriOnly() {
             let cleanMateri = surahData.map(s => ({ name: s.name, count: 0, lastSucceed: 0 }));
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cleanMateri));
@@ -556,10 +565,9 @@
                     if(Array.isArray(parsed) && parsed[0].hasOwnProperty('name')) {
                         surahData = parsed.map(s => ({ name: s.name, count: 0, lastSucceed: 0 }));
                         localStorage.setItem('surahDataV5', JSON.stringify(surahData));
-                        renderSurahSettings();
-                        alert("Sukses! Daftar materi baru berhasil dimuat.");
+                        renderSurahSettings(); alert("Sukses! Daftar materi baru berhasil dimuat.");
                     } else { alert("Struktur file tidak valid."); }
-                } catch (err) { alert("Gagal membaca berkas JSON."); }
+                } catch (err) { alert("Gagal membaca berkas."); }
             };
             reader.readAsText(file);
         }
@@ -582,15 +590,13 @@
                         surahData = parsed.surahData; sessionLogs = parsed.sessionLogs;
                         localStorage.setItem('surahDataV5', JSON.stringify(surahData));
                         localStorage.setItem('sessionLogsV5', JSON.stringify(sessionLogs));
-                        renderReports();
-                        alert("Restorasi Berhasil! Seluruh histori pencapaian personal anak Anda telah pulih.");
-                    } else { alert("Berkas ini bukan arsip statistik personal yang valid."); }
-                } catch (err) { alert("Gagal memproses data pemulihan."); }
+                        renderReports(); alert("Restorasi Berhasil! Seluruh histori personal anak Anda telah pulih.");
+                    } else { alert("Arsip statistik tidak valid."); }
+                } catch (err) { alert("Gagal memproses restorasi."); }
             };
             reader.readAsText(file);
         }
 
-        // --- SETTINGS MGR ---
         function renderSurahSettings() {
             const container = document.getElementById('surahManagerList'); container.innerHTML = '';
             surahData.forEach((s, idx) => {
